@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4 text-primary">🛒 Your Cart</h2>
+
+{% if cart.cart_items.all %}
+  <table class="min-w-full bg-white border border-theme rounded-lg overflow-hidden shadow-theme">
+    <thead>
+      <tr class="bg-primary/10">
+        <th class="py-3 px-4 text-left text-primary font-semibold">Item</th>
+        <th class="py-3 px-4 text-left text-primary font-semibold">Quantity</th>
+        <th class="py-3 px-4 text-left text-primary font-semibold">Price</th>
+        <th class="py-3 px-4 text-left text-primary font-semibold">Subtotal</th>
+        <th class="py-3 px-4 text-left text-primary font-semibold">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cart_item in cart.cart_items.all %}
+      <tr class="border-t border-theme hover:bg-primary/5 transition-colors">
+        <td class="py-3 px-4">{{ cart_item.item.name }}</td>
+        <td class="py-3 px-4">{{ cart_item.quantity }}</td>
+        <td class="py-3 px-4">${{ cart_item.item.price }}</td>
+        <td class="py-3 px-4">${{ cart_item.subtotal }}</td>
+        <td class="py-3 px-4">
+          <a href="{% url 'cart:remove_from_cart' cart_item.item.id %}" 
+             class="text-red-500 hover:text-red-700 transition-colors duration-300 font-medium">
+            <i class="fas fa-trash-alt mr-1"></i> Remove
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mt-6 p-4 bg-white rounded-lg shadow-theme">
+    <div class="flex justify-between items-center mb-4">
+      <p class="text-lg font-semibold text-primary">Total:</p>
+      <p class="text-2xl font-bold text-primary">${{ cart.total_price }}</p>
+    </div>
+    <div class="flex justify-end">
+      <a href="{% url 'cart:checkout' %}" 
+        class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+        <i class="fas fa-credit-card mr-2"></i> Proceed to Payment
+      </a>
+    </div>
+  </div>
+{% else %}
+  <div class="bg-white rounded-lg shadow-theme p-8 text-center">
+    <div class="text-6xl mb-4 text-muted">
+      <i class="fas fa-shopping-cart"></i>
+    </div>
+    <p class="text-lg text-muted">Your cart is empty.</p>
+    <a href="{% url 'item:items' %}" 
+       class="inline-block mt-4 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-300">
+      <i class="fas fa-shopping-bag mr-2"></i> Start Shopping
+    </a>
+  </div>
+{% endif %}
+{% endblock %}

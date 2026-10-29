@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="text-center mt-10">
+  <div class="max-w-md mx-auto bg-white rounded-lg shadow-theme p-8">
+    <div class="mb-6">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+        <i class="fas fa-check-circle text-3xl text-green-500"></i>
+      </div>
+      <h2 class="text-3xl font-bold text-primary mb-4">Payment Successful!</h2>
+      <p class="text-gray-700 mb-6">
+        Thank you, {{ request.user.username }}! Your payment of 
+        <strong>${{ payment.amount }}</strong> has been completed successfully.
+      </p>
+    </div>
+    
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/" 
+         class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+        <i class="fas fa-home mr-2"></i> Return Home
+      </a>
+      <a href="{% url 'item:items' %}" 
+         class="px-6 py-3 bg-white text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors duration-300">
+        <i class="fas fa-shopping-bag mr-2"></i> Continue Shopping
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

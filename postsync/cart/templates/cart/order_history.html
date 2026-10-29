@@ -1,0 +1,191 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<style>
+    .order-card {
+        background-color: #fff;
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        box-shadow: 0 2px 6px var(--shadow-color);
+        transition: transform 0.2s ease;
+    }
+
+    .order-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px var(--shadow-dark);
+    }
+
+    .card-header {
+        background-color: var(--bg-secondary);
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        display: inline-block;
+    }
+
+    .order-details {
+        display: none;
+        margin-top: 1rem;
+    }
+
+    .toggle-details {
+        font-size: 0.9rem;
+        border: 1px solid var(--border-primary);
+        background: none;
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--text-primary);
+    }
+
+    .toggle-details:hover {
+        background-color: var(--primary-light);
+        color: var(--text-light);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.5rem;
+    }
+
+    th, td {
+        padding: 0.6rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-primary);
+    }
+
+    th {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    .empty-state {
+        background-color: #fff;
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        padding: 3rem;
+    }
+
+    .empty-state i {
+        color: var(--text-muted);
+    }
+
+    .btn-simple {
+        border: 1px solid var(--border-primary);
+        background-color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .btn-simple:hover {
+        background-color: var(--primary-light);
+        color: var(--text-light);
+    }
+</style>
+
+<div class="max-w-6xl mx-auto mt-10">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-primary">My Orders</h2>
+        <span class="text-muted">{{ payments|length }} Orders</span>
+    </div>
+
+    {% if payments %}
+        {% for p in payments %}
+        <div class="order-card mb-4">
+            <div class="card-header flex justify-between">
+                <span class="text-primary">Order #{{ forloop.counter }}</span>
+                <small class="text-muted">{{ p.created_at|date:"M d, Y H:i" }}</small>
+            </div>
+            <div class="p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="mb-0">
+                        <strong>Status:</strong>
+                        <span class="status-badge">{{ p.status|title }}</span>
+                    </p>
+                    <p class="mb-0">
+                        <strong>Total:</strong> ${{ p.amount }}
+                    </p>
+                </div>
+
+                <div class="text-end">
+                    <button class="toggle-details" data-target="order-{{ forloop.counter }}">
+                        Show Details
+                    </button>
+                </div>
+
+                <div id="order-{{ forloop.counter }}" class="order-details">
+                    {% if p.payment_items.all %}
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pi in p.payment_items.all %}
+                                <tr>
+                                    <td class="p-2">{{ pi.item_name|default:"Deleted Item" }}</td>
+                                    <td class="p-2">{{ pi.quantity }}</td>
+                                    <td class="p-2">${{ pi.price }}</td>
+                                    <td class="p-2">${{ pi.subtotal }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end text-primary"><strong>Total:</strong></td>
+                                    <td class="text-primary"><strong>${{ p.amount }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    {% else %}
+                        <p class="mt-3 text-muted">No items recorded for this payment.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center empty-state mt-4">
+            <i class="fas fa-box-open fa-3x mb-3"></i>
+            <h4 class="font-normal mb-2 text-primary">No Purchase History</h4>
+            <p class="text-muted mb-3">You haven't made any purchases yet.</p>
+            <a href="{% url 'item:items' %}" class="btn-simple">Start Shopping</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".toggle-details").forEach(button => {
+            button.addEventListener("click", function() {
+                const target = document.getElementById(this.dataset.target);
+                if (target.style.display === "block") {
+                    target.style.display = "none";
+                    this.textContent = "Show Details";
+                } else {
+                    target.style.display = "block";
+                    this.textContent = "Hide Details";
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

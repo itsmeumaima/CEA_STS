@@ -1,0 +1,24 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-white shadow-theme rounded-lg p-6 mt-10">
+  <h2 class="text-2xl font-bold mb-4 text-primary">Add to Cart</h2>
+  <p class="text-lg mb-2"><strong>Item:</strong> {{ item.name }}</p>
+  <p class="text-gray-700 mb-4"><strong>Price:</strong> ${{ item.price }}</p>
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <label for="quantity" class="block font-medium text-primary">Quantity:</label>
+    <input type="number" name="quantity" id="quantity" value="1" min="1"
+           class="border border-theme rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-primary focus:border-primary" required>
+
+    <button type="submit"
+      class="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary-dark transition-colors duration-300">
+      Add to Cart
+    </button>
+  </form>
+
+  <div class="mt-4 text-center">
+    <a href="{% url 'cart:view_cart' %}" class="text-primary hover:text-primary-dark transition-colors duration-300">Back to Cart</a>
+  </div>
+</div>
+{% endblock %}

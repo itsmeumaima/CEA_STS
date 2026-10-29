@@ -1,0 +1,210 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Browse Items - PostSync{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Page Header -->
+    <div class="mb-10 py-12 px-6 bg-primary rounded-2xl shadow-sm">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4 text-white bg-clip-text ">
+                Browse Items
+            </h1>
+            <p class="text-xl text-muted text-gray-100 max-w-2xl mx-auto">
+                Discover our collection of unique items and find exactly what you're looking for
+            </p>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-10">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Search Bar -->
+            <div class="lg:col-span-3">
+                <form id="search-form" method="get" action="{% url 'item:items' %}">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-muted"></i>
+                        </div>
+                        <input name="query" 
+                            class="block w-full pl-10 pr-3 py-4 border border-theme rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-300" 
+                            type="text" 
+                            value="{{ query }}" 
+                            placeholder="Search for watches, candles, shoes, and more...">
+                    </div>
+                    <div class="mt-3">
+                        
+                    </div>
+                </form>
+
+            </div>
+
+            <!-- Search Button -->
+            <div>
+                <button type="submit" form="search-form" class="w-full py-4 px-6 gradient-primary text-white font-medium rounded-xl hover:shadow-lg transition-all duration-300 shadow-md">
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Sidebar Filters -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+                <h2 class="text-xl font-bold text-primary mb-6 pb-3 border-b border-theme">
+                    <i class="fas fa-filter mr-2 text-primary"></i> Filters
+                </h2>
+
+                <!-- Categories -->
+                <div class="mb-8">
+                    <h3 class="font-semibold text-primary mb-4 ">Categories</h3>
+                    <ul class="space-y-2">
+                        {% for category in categories %}
+                        <li>
+                            <a href="{% url 'item:items' %}?query={{ query }}&category={{ category.id }}" 
+                                class="flex items-center justify-between py-3 px-4 rounded-lg hover:bg-primary/5 transition-colors duration-300 {% if category.id == category_id %}bg-primary/10 text-primary font-lg{% endif %} font-bubblegum">
+                                <span>{{ category.name }}</span>
+                                {% if category.id == category_id %}
+                                    <i class="fas fa-check text-primary"></i>
+                                {% endif %}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Clear Filters -->
+                <div class="pt-4 border-t border-theme">
+                    <h3 class="font-semibold text-primary mb-4">Reset</h3>
+                    <a href="{% url 'item:items' %}" 
+                        class="w-full py-3 px-4 bg-a text-white font-medium rounded-lg hover:bg-accent-complement transition-all duration-300 flex items-center justify-center">
+                        <i class="fas fa-redo mr-2"></i> Clear All Filters
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Grid -->
+        <div class="lg:col-span-3">
+            <!-- Results Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-primary">
+                        {% if query %}Search Results for "{{ query }}"{% else %}All Items{% endif %}
+                    </h2>
+                    <p class="text-muted">{{ items|length }} item{{ items|length|pluralize }} found</p>
+                </div>
+                <div >
+                    <form method="get" action="{% url 'item:items' %}">
+                        <input type="hidden" name="query" value="{{ query }}">
+                        <input type="hidden" name="category" value="{{ category_id }}">
+                        <select name="sort" onchange="this.form.submit()" 
+                            class="py-2 px-4 border border-theme rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ">
+                            <option value="">Sort by: Newest</option>
+                            <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price (Low to High)</option>
+                            <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price (High to Low)</option>
+                            <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name (A–Z)</option>
+                        </select>
+                    </form>
+
+
+                </div>
+            </div>
+
+            <!-- Items Grid -->
+            {% if items %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for item in items %}
+                <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+                    <a href="{% url 'item:detail' item.id %}" class="block">
+                        <div class="relative overflow-hidden h-56">
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+                            <!-- <div class="absolute top-3 right-3 bg-secondary text-white px-3 py-1 m-3 rounded-sm text-md font-medium h-3">
+                                {{ item.get_category_display }}
+                            </div> -->
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-xl font-bold text-primary">{{ item.name }}</h3>
+                                <span class="text-lg font-bold text-primary">${{ item.price }}</span>
+                            </div>
+                            <p class="text-muted text-sm mb-4">{{ item.description|truncatewords:15 }}</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center text-muted text-sm">
+                                    <img src="{{ item.created_by.profile.image.url }}" alt="{{ item.created_by.username }}" class="w-6 h-6 rounded-full mr-2">
+                                    <span>{{ item.created_by.username }}</span>
+                                </div>
+                                <button class="text-sm text-primary hover:text-primary-dark font-medium">
+                                    View Details <i class="fas fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- No Results -->
+            <div class="bg-white rounded-2xl p-12 text-center shadow-sm">
+                <div class="text-muted mb-6">
+                    <i class="fas fa-search text-6xl"></i>
+                </div>
+                <h3 class="text-2xl font-medium text-primary mb-3">No items found</h3>
+                <p class="text-muted mb-6 max-w-md mx-auto">
+                    {% if query %}We couldn't find any items matching your search. Try different keywords or browse categories.{% else %}There are no items available at the moment. Check back later!{% endif %}
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <a href="{% url 'item:items' %}" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-300">
+                        Clear Search
+                    </a>
+                    <a href="{% url 'item:new' %}" class="px-6 py-3 bg-white text-primary border border-primary rounded-lg hover:bg-primary/5 transition-colors duration-300">
+                        Add New Item
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Pagination -->
+            {% if page_obj.paginator.num_pages > 1 %}
+                <div class="mt-10 flex justify-center">
+                    <nav class="inline-flex rounded-md shadow">
+                        {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}&query={{ query }}&category={{ category_id }}&sort={{ sort }}"
+                        class="py-2 px-4 bg-white border border-theme rounded-l-lg text-primary hover:bg-primary/5">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        {% else %}
+                        <span class="py-2 px-4 bg-gray-100 border border-theme rounded-l-lg text-muted">
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <span class="py-2 px-4 bg-primary text-white border border-primary">{{ num }}</span>
+                        {% else %}
+                        <a href="?page={{ num }}&query={{ query }}&category={{ category_id }}&sort={{ sort }}"
+                        class="py-2 px-4 bg-white border border-theme text-primary hover:bg-primary/5">{{ num }}</a>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}&query={{ query }}&category={{ category_id }}&sort={{ sort }}"
+                        class="py-2 px-4 bg-white border border-theme rounded-r-lg text-primary hover:bg-primary/5">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        {% else %}
+                        <span class="py-2 px-4 bg-gray-100 border border-theme rounded-r-lg text-muted">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                        {% endif %}
+                    </nav>
+                </div>
+                {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

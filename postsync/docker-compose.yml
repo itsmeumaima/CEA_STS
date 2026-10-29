@@ -1,0 +1,11 @@
+
+services:
+  web:
+    build: .
+    image: postsync-web
+    container_name: postsync-container
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    restart: unless-stopped

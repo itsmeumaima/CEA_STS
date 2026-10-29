@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PostSync - Professional content management platform">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>{% block title %}Home{% endblock %} | PostSync</title>
+    <!-- FONTS -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        .font-bubblegum {
+            font-family: 'Bubblegum Sans', cursive;
+        }
+
+        .font-poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+
+    <!-- Custom CSS Variables for Theme -->
+    <style>
+        :root {
+            /* Primary Colors - Electric Violet */
+            --primary-color: #902bf5;
+            /* Electric Violet */
+            --primary-dark: #1a1463;
+            /* Lucky Point */
+            --primary-light: #f361fb;
+            /* Heliotrope */
+            --primary-deep: #6b1aa6;
+            /* Darker Violet */
+
+            /* Secondary Colors - Coral */
+            --secondary-color: #fc7b54;
+            /* Coral */
+            --secondary-light: #ffcab8;
+            /* Light Coral */
+            --secondary-dark: #d85d3a;
+            /* Dark Coral */
+
+            /* Accent Colors */
+            --accent-color: #31bacd;
+            /* Scooter */
+            --accent-light: #b3e5ed;
+            /* Light Scooter */
+            --accent-vibrant: #0d8b9a;
+            /* Dark Scooter */
+            --accent-complement: #bdbebe;
+            /* Silver Sand */
+
+            /* Background Colors */
+            --bg-primary: #FFFFFF;
+            /* Main background is white */
+            --bg-secondary: #f8f9fa;
+            /* Light gray for secondary sections */
+            --bg-alt: #f1f3f5;
+            /* Alternative background */
+            --bg-gradient: linear-gradient(135deg, #902bf5 0%, #1a1463 50%, #f361fb 100%);
+            --bg-yellow: #eee0a8;
+
+            /* Text Colors */
+            --text-primary: #1a1463;
+            /* Lucky Point */
+            --text-secondary: #902bf5;
+;
+            /* Scooter */
+            --text-light: #FFFFFF;
+            /* White for dark backgrounds */
+            --text-muted: #6c757d;
+            /* Neutral Gray */
+            --text-accent: #6b1aa6;
+            /* Coral accent */
+
+            /* Border Colors */
+            --border-primary: #bdbebe;
+            /* Silver Sand */
+            --border-secondary: #902bf5;
+            /* Electric Violet accent border */
+
+            /* Shadow Colors */
+            --shadow-color: rgba(144, 43, 245, 0.15);
+            /* Electric Violet shadow */
+            --shadow-dark: rgba(26, 20, 99, 0.25);
+            /* Lucky Point Shadow */
+            --shadow-complement: rgba(49, 186, 205, 0.2);
+            /* Scooter shadow */
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .animate-float {
+            animation: float 3s infinite ease-in-out;
+        }
+
+        /* Background Utilities */
+        .bg-primary {
+            background-color: var(--primary-color);
+        }
+
+        .bg-primary-light {
+            background-color: var(--primary-light);
+        }
+
+        .bg-primary-dark {
+            background-color: var(--primary-dark);
+        }
+
+        .bg-primary-deep {
+            background-color: var(--primary-deep);
+        }
+
+        .bg-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .bg-secondary-light {
+            background-color: var(--secondary-light);
+        }
+
+        .bg-secondary-dark {
+            background-color: var(--secondary-dark);
+        }
+
+        .bg-accent {
+            background-color: var(--accent-color);
+        }
+
+        .bg-accent-light {
+            background-color: var(--accent-light);
+        }
+
+        .bg-accent-vibrant {
+            background-color: var(--accent-vibrant);
+        }
+
+        .bg-accent-complement {
+            background-color: var(--accent-complement);
+        }
+
+        .bg-theme-primary {
+            background-color: var(--bg-primary);
+        }
+
+        .bg-theme-secondary {
+            background-color: var(--bg-secondary);
+        }
+
+        .bg-theme-alt {
+            background-color: var(--bg-alt);
+        }
+
+        /* Text Utilities */
+        .white-outline-text {
+            /* Option 1: Using -webkit-text-stroke (simpler but less browser support) */
+            -webkit-text-stroke: 0.5px white;
+            text-stroke: 0.5px white;
+
+            /* Option 2: Using text-shadow for better compatibility with thinner outline */
+            text-shadow:
+                -0.5px -0.5px 0 white,
+                0.5px -0.5px 0 white,
+                -0.5px 0.5px 0 white,
+                0.5px 0.5px 0 white;
+        }
+
+        .text-primary {
+            color: var(--text-primary);
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .text-light {
+            color: var(--text-light);
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        .text-accent {
+            color: var(--text-accent);
+        }
+
+        .text-violet {
+            color: var(--primary-color);
+        }
+
+        .text-lighter {
+            color: var(--primary-light);
+        }
+
+        /* Borders & Shadows */
+        .border-theme {
+            border-color: var(--border-primary);
+        }
+
+        .border-accent {
+            border-color: var(--border-secondary);
+        }
+
+        .shadow-theme {
+            box-shadow: 0 4px 6px -1px var(--shadow-color);
+        }
+
+        .shadow-deep {
+            box-shadow: 0 10px 15px -3px var(--shadow-dark);
+        }
+
+        .shadow-complement {
+            box-shadow: 0 10px 15px -3px var(--shadow-complement);
+        }
+
+        /* Gradient Utilities */
+        .gradient-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+        }
+
+        .gradient-accent {
+            background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
+        }
+
+        .gradient-vibrant {
+            background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-dark) 50%, var(--primary-color) 100%);
+        }
+
+        .gradient-shimmer {
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 25%, var(--accent-vibrant) 50%, var(--primary-dark) 75%, var(--primary-color) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--text-light);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px var(--shadow-dark);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px var(--shadow-dark);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        /* Cards */
+        .card-gift {
+            background-color: var(--bg-primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px var(--shadow-color);
+            border: 1px solid var(--border-primary);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-gift::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-deep), var(--primary-color));
+        }
+
+        .card-gift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px var(--shadow-dark);
+            border-color: var(--border-accent);
+        }
+
+        /* Modern Pattern Overlay */
+        .modern-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23902bf5' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            position: relative;
+        }
+
+        .modern-pattern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(144, 43, 245, 0.05) 0%, rgba(26, 20, 99, 0.1) 100%);
+            pointer-events: none;
+        }
+
+        /* Ribbon */
+        .ribbon {
+            position: relative;
+            background-color: var(--primary-deep);
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .ribbon::before,
+        .ribbon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 100%;
+            background-color: var(--primary-dark);
+        }
+
+        .ribbon::before {
+            left: -10px;
+            transform: skewX(-15deg);
+        }
+
+        .ribbon::after {
+            right: -10px;
+            transform: skewX(15deg);
+        }
+
+        /* Text Effects */
+        .text-shadow {
+            text-shadow: 1px 1px 2px rgba(26, 20, 99, 0.2);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, var(--primary-deep), var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Decorative Corners */
+        .decorative-corner {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, transparent 50%, var(--primary-deep) 50%);
+        }
+
+        .decorative-corner.top-left {
+            top: 0;
+            left: 0;
+        }
+
+        .decorative-corner.top-right {
+            top: 0;
+            right: 0;
+            transform: rotate(90deg);
+        }
+
+        .decorative-corner.bottom-left {
+            bottom: 0;
+            left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .decorative-corner.bottom-right {
+            bottom: 0;
+            right: 0;
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+
+<body class="bg-theme-primary text-primary min-h-screen flex flex-col ">
+    <nav
+        class="bg-theme-primary shadow-md py-4 px-6 flex justify-between items-center sticky top-0 z-50 border-b border-primary">
+        <div class="flex items-center space-x-2">
+            <div class="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
+                <i class="fas fa-sync text-white"></i>
+            </div>
+            <a href="/" class="text-2xl font-bold gradient-primary bg-clip-text text-transparent">PostSync</a>
+        </div>
+
+        <div class="hidden md:flex items-center space-x-8">
+            <a href="{% url 'item:items' %}"
+                class="text-primary hover:text-primary-dark font-medium transition-colors duration-300 flex items-center">
+                <i class="fas fa-th-large mr-2"></i> Browse
+            </a>
+
+            {% if request.user.is_authenticated %}
+            {% if request.user.is_staff %}
+            <!--  Staff Links -->
+            <a href="{% url 'item:new' %}"
+                class="text-primary hover:text-primary-dark font-medium transition-colors duration-300 flex items-center">
+                <i class="fas fa-plus-circle mr-2"></i> Add Item
+            </a>
+            <a href="{% url 'analytics:dashboard' %}"
+                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-300 flex items-center">
+                <i class="fas fa-chart-line mr-2"></i> Analytics
+            </a>
+            <a href="{% url 'dashboard:index' %}"
+            class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-300 flex items-center">
+                <i class="fas fa-chart-line mr-2"></i> Dashboard
+            </a>
+
+            {% else %}
+            <!--  Normal User Links -->
+            <a href="{% url 'cart:view_cart' %}"
+                class="text-primary hover:text-primary-dark font-medium transition-colors duration-300 flex items-center">
+                <i class="fas fa-shopping-cart mr-2"></i> Cart
+            </a>
+            <a href="{% url 'cart:order_history' %}"
+                class="text-primary hover:text-primary-dark font-medium transition-colors duration-300 flex items-center">
+                <i class="fas fa-credit-card mr-2"></i> Orders
+            </a>
+           
+            <a href="{% url 'core:contact' %}"
+                class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition-colors duration-300 flex items-center">
+                <i class="fas fa-envelope mr-2"></i> Inbox
+            </a>
+            {% endif %}
+
+            
+
+
+            <!--  Logout Button -->
+            <a href="{% url 'core:logout' %}"
+                class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-vibrant transition-colors duration-300 flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
+
+            {% else %}
+            <!-- Not Logged In -->
+            <a href="{% url 'core:signup' %}"
+                class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-300 flex items-center">
+                <i class="fas fa-user-plus mr-2"></i> Sign Up
+            </a>
+            <a href="{% url 'core:login' %}"
+                class="px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-vibrant transition-colors duration-300 flex items-center">
+                <i class="fas fa-sign-in-alt mr-2"></i> Login
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Mobile menu button -->
+        <button class="md:hidden text-primary focus:outline-none">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow px-6 py-8 max-w-7xl mx-auto w-full animate-fade-in">
+        {% block content %}
+        <!-- Content will be inserted here -->
+        {% endblock %}
+    </main>
+
+    <footer class="gradient-primary text-white py-12 px-6">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Company Info -->
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-sync text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">PostSync</h3>
+                </div>
+                <p class="text-light mb-4 max-w-lg">
+                    Professional content synchronization platform designed to streamline your workflow and enhance
+                    productivity.
+                    Manage, publish, and track your content seamlessly across all channels.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="https://www.instagram.com/ainwee_234/" class="text-light hover:text-white transition-colors">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61582612695962" class="text-light hover:text-white transition-colors">
+                        <i class="fab fa-facebook text-xl"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4 text-accent-light">Quick Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="{% url 'item:items' %}" class="text-light hover:text-white transition-colors">Browse
+                            Content</a></li>
+                    <li><a href="{% url 'item:items' %}" class="text-light hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="{% url 'core:contact' %}" class="text-light hover:text-white transition-colors">Contact</a></li>
+                    <li><a href="{% url 'cart:view_cart' %}" class="text-light hover:text-white transition-colors">Pricing</a></li>
+                </ul>
+            </div>
+
+            
+        </div>
+
+        <div class="max-w-7xl mx-auto mt-8 pt-8 border-t border-white border-opacity-20 text-center text-light">
+            <p>&copy; {% now "Y" %} PostSync. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

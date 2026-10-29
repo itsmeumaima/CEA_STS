@@ -1,0 +1,96 @@
+
+name: PostSync CI/CD
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: postsync-web
+  EC2_INSTANCE_ID: i-093bf1c5b6bedbdde
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::045245878007:role/GitHubActionsPostSyncRole
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t $ECR_REPOSITORY:${GITHUB_SHA} .
+
+      - name: Test Docker image build
+        run: |
+          docker image inspect $ECR_REPOSITORY:${GITHUB_SHA}
+
+      - name: Push image to ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker tag $ECR_REPOSITORY:${GITHUB_SHA} $REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA}
+          docker tag $ECR_REPOSITORY:${GITHUB_SHA} $REGISTRY/$ECR_REPOSITORY:latest
+          docker push $REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA}
+          docker push $REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Deploy to EC2 using SSM
+        run: |
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "$EC2_INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --parameters 'commands=[
+              "cd /home/ubuntu/postsync",
+              "aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 045245878007.dkr.ecr.us-east-1.amazonaws.com",
+              "sudo docker compose pull app",
+              "sudo docker compose up -d --no-build --no-deps app",
+              "sudo docker image prune -f"
+            ]' \
+            --query 'Command.CommandId' \
+            --output text)
+
+          echo "SSM command ID: $COMMAND_ID"
+
+          for attempt in $(seq 1 30); do
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id "$COMMAND_ID" \
+              --instance-id "$EC2_INSTANCE_ID" \
+              --query 'Status' \
+              --output text 2>/dev/null || true)
+
+            echo "Deployment status: $STATUS"
+
+            if [ "$STATUS" = "Success" ]; then
+              exit 0
+            fi
+
+            if [ "$STATUS" = "Failed" ] || [ "$STATUS" = "Cancelled" ] || [ "$STATUS" = "TimedOut" ]; then
+              aws ssm get-command-invocation \
+                --command-id "$COMMAND_ID" \
+                --instance-id "$EC2_INSTANCE_ID" \
+                --output json
+              exit 1
+            fi
+
+            sleep 10
+          done
+
+          echo "Timed out waiting for deployment."
+          exit 1
